@@ -1,0 +1,42 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  userId      String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAtMs DateTime @default(now())
+  updatedAtMs DateTime @updatedAt
+
+  name              String @unique
+  encryptedPassword String
+  salt              String
+  // habits            Habit[]
+}
+
+// model Habit {
+//   habitId     String   @id @default(auto()) @map("_id") @db.ObjectId
+//   createdAtMs DateTime @default(now())
+//   updatedAtMs DateTime @updatedAt
+
+//   habitName String
+
+//   user             User              @relation(fields: [userId], references: [userId])
+//   userId           String            @db.ObjectId
+//   habitOccurrences HabitOccurrence[]
+
+//   @@unique(name: "uniqueNameInUser", [habitName, userId])
+// }
+
+// model HabitOccurrence {
+//   habitOccurrenceId String   @id @default(auto()) @map("_id") @db.ObjectId
+//   occurredAtMs      DateTime
+//   createdAtMs       DateTime @default(now())
+
+//   habit   Habit  @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
+//   habitId String @db.ObjectId
+// }
