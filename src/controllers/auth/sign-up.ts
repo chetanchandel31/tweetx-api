@@ -12,6 +12,9 @@ const schemaAuthSignUpPayload = z.object({
   name: z
     .string({ required_error: "Name is required." })
     .min(3, { message: "Name should be of 3 characters atleast." }),
+  email: z
+    .string({ required_error: "Email is required" })
+    .email({ message: "Invalid email" }),
   password: z
     .string({ required_error: "Password is required." })
     .min(8, { message: "Password should be of 8 characters atleast." }),
@@ -37,7 +40,7 @@ const authSignUpHandler = defineHandler(async (payload) => {
   let status: number = HttpStatusCode.OK;
   let responseData: TypeResult<TypeSignUpResponse>;
 
-  const { name, password } = payload;
+  const { name, password, email } = payload;
 
   const salt = uuid();
 
@@ -52,6 +55,7 @@ const authSignUpHandler = defineHandler(async (payload) => {
         name,
         salt,
         encryptedPassword,
+        email,
       },
     });
     const { authToken, authTokenExpiresAtMs } = generateAuthToken({

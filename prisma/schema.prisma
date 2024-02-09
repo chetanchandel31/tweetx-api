@@ -13,6 +13,7 @@ model User {
   updatedAtMs DateTime @updatedAt
 
   name              String @unique
+  email             String @unique
   encryptedPassword String
   salt              String
   // habits            Habit[]
