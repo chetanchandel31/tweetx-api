@@ -19,20 +19,20 @@ model User {
 
   posts Post[]
 
-  followedBy Follows[] @relation("followedBy")
-  following  Follows[] @relation("following")
+  followers Follows[] @relation("followers")
+  following Follows[] @relation("following")
 }
 
 model Follows {
   followId String @id @default(auto()) @map("_id") @db.ObjectId
 
-  followedBy   User   @relation("followedBy", fields: [followedById], references: [userId])
-  followedById String @db.ObjectId
+  follower   User   @relation("followers", fields: [followerId], references: [userId])
+  followerId String @db.ObjectId
 
   following   User   @relation("following", fields: [followingId], references: [userId])
   followingId String @db.ObjectId
 
-  @@unique([followingId, followedById])
+  @@unique([followingId, followerId])
 }
 
 model Post {
