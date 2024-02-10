@@ -16,28 +16,32 @@ model User {
   email             String @unique
   encryptedPassword String
   salt              String
-  // habits            Habit[]
+
+  posts Post[]
+
+  followedBy Follows[] @relation("followedBy")
+  following  Follows[] @relation("following")
 }
 
-// model Habit {
-//   habitId     String   @id @default(auto()) @map("_id") @db.ObjectId
-//   createdAtMs DateTime @default(now())
-//   updatedAtMs DateTime @updatedAt
+model Follows {
+  followId String @id @default(auto()) @map("_id") @db.ObjectId
 
-//   habitName String
+  followedBy   User   @relation("followedBy", fields: [followedById], references: [userId])
+  followedById String @db.ObjectId
 
-//   user             User              @relation(fields: [userId], references: [userId])
-//   userId           String            @db.ObjectId
-//   habitOccurrences HabitOccurrence[]
+  following   User   @relation("following", fields: [followingId], references: [userId])
+  followingId String @db.ObjectId
 
-//   @@unique(name: "uniqueNameInUser", [habitName, userId])
-// }
+  @@unique([followingId, followedById])
+}
 
-// model HabitOccurrence {
-//   habitOccurrenceId String   @id @default(auto()) @map("_id") @db.ObjectId
-//   occurredAtMs      DateTime
-//   createdAtMs       DateTime @default(now())
+model Post {
+  postId      String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAtMs DateTime @default(now())
+  updatedAtMs DateTime @updatedAt
 
-//   habit   Habit  @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
-//   habitId String @db.ObjectId
-// }
+  content String
+
+  user   User   @relation(fields: [userId], references: [userId])
+  userId String @db.ObjectId
+}
