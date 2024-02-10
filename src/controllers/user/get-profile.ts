@@ -38,9 +38,9 @@ const userGetProfileHandler = defineHandler(async (payload, req) => {
       name: true,
       userId: true,
 
-      followers: { select: { followerId: true } },
+      followers: { select: { followId: true } },
 
-      following: { select: { followingId: true } },
+      following: { select: { followId: true } },
 
       posts: { select: { postId: true } },
     },
