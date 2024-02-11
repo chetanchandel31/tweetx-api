@@ -1,8 +1,8 @@
-import { NextFunction, Request, RequestHandler, Response } from "express";
-import { ZodError, ZodObject, ZodRawShape, z } from "zod";
-import { TypeResult } from "../types";
-import sendResponse from "./sendResponse";
 import { Prisma } from "@prisma/client";
+import { NextFunction, Request, RequestHandler, Response } from "express";
+import { ZodError, ZodRawShape, z } from "zod";
+import { TypeResult, TypeZodSchema } from "../types";
+import sendResponse from "./sendResponse";
 
 const handleInternalError = (error: unknown, req: Request, res: Response) => {
   console.log("#oue297893287" + req.route?.path, error);
@@ -29,9 +29,9 @@ const handleInternalError = (error: unknown, req: Request, res: Response) => {
 
 const validateHandlerResult = <ZodObjResponse extends ZodRawShape>(
   req: Request,
-  responseSchema: ZodObject<ZodObjResponse>,
+  responseSchema: TypeZodSchema<ZodObjResponse>,
   handlerResult: {
-    responseData: TypeResult<z.infer<ZodObject<ZodObjResponse>>>;
+    responseData: TypeResult<z.infer<TypeZodSchema<ZodObjResponse>>>;
     status?: number;
   }
 ) => {
@@ -60,22 +60,24 @@ function createRequestHandler<
   ZodObjPayload extends ZodRawShape,
   ZodObjResponse extends ZodRawShape
 >(
-  payloadSchema: ZodObject<ZodObjPayload>,
-  responseSchema: ZodObject<ZodObjResponse>
+  payloadSchema: TypeZodSchema<ZodObjPayload>,
+  responseSchema: TypeZodSchema<ZodObjResponse>
 ) {
   type TypeCallBack = (
-    payload: z.infer<ZodObject<ZodObjPayload>>,
+    payload: z.infer<TypeZodSchema<ZodObjPayload>>,
     req: Request,
     res: Response,
     next: NextFunction
   ) => Promise<{
-    responseData: TypeResult<z.infer<ZodObject<ZodObjResponse>>>;
+    responseData: TypeResult<z.infer<TypeZodSchema<ZodObjResponse>>>;
     status?: number;
   }>;
 
   return (cb: TypeCallBack): RequestHandler => {
     return async (req, res, next) => {
-      const _sendResponse = sendResponse<z.infer<ZodObject<ZodObjResponse>>>({
+      const _sendResponse = sendResponse<
+        z.infer<TypeZodSchema<ZodObjResponse>>
+      >({
         res,
       });
 
@@ -110,20 +112,22 @@ function createRequestHandler<
 }
 
 function createGetRequestHandler<ZodObjResponse extends ZodRawShape>(
-  responseSchema: ZodObject<ZodObjResponse>
+  responseSchema: TypeZodSchema<ZodObjResponse>
 ) {
   type TypeCallBack = (
     req: Request,
     res: Response,
     next: NextFunction
   ) => Promise<{
-    responseData: TypeResult<z.infer<ZodObject<ZodObjResponse>>>;
+    responseData: TypeResult<z.infer<TypeZodSchema<ZodObjResponse>>>;
     status?: number;
   }>;
 
   return (cb: TypeCallBack): RequestHandler => {
     return async (req, res, next) => {
-      const _sendResponse = sendResponse<z.infer<ZodObject<ZodObjResponse>>>({
+      const _sendResponse = sendResponse<
+        z.infer<TypeZodSchema<ZodObjResponse>>
+      >({
         res,
       });
 
@@ -142,4 +146,4 @@ function createGetRequestHandler<ZodObjResponse extends ZodRawShape>(
   };
 }
 
-export { createRequestHandler, createGetRequestHandler };
+export { createGetRequestHandler, createRequestHandler };

@@ -4,10 +4,22 @@ import { createRequestHandler } from "../../utils/createRequestHandler";
 import HttpStatusCode from "../../utils/httpStatus";
 import { TypeResult } from "../../types";
 
-const schemaUserListPayload = z.object({
-  page: z.number(),
-  perPage: z.number(),
-});
+const schemaUserListPayload = z
+  .object({
+    page: z.number(),
+    perPage: z.number(),
+    followedByUserId: z.string().optional(),
+    followerOfUserId: z.string().optional(),
+  })
+  .superRefine((schema, ctx) => {
+    if (schema.followedByUserId && schema.followerOfUserId) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Pick one from followedByUserId or followerOfUserId",
+        path: ["followedByUserId"],
+      });
+    }
+  });
 const schemaUserListResponse = z.object({
   totalPages: z.number(),
   nextPage: z.number().nullable(),
@@ -30,6 +42,10 @@ const defineHandler = createRequestHandler(
   schemaUserListResponse
 );
 
+type TypeUsersWhere = Required<
+  Parameters<typeof prismaClient.user.findMany>
+>[0]["where"];
+
 const userListHandler = defineHandler(async (payload, req) => {
   let status: number = HttpStatusCode.BAD_REQUEST;
   let responseData: TypeResult<TypeUserListResponse> = {
@@ -37,11 +53,31 @@ const userListHandler = defineHandler(async (payload, req) => {
     errorMessages: ["Failed to list users"],
   };
 
-  const userListFilters = {
+  // build query filters
+  let userListFilters: TypeUsersWhere = {
     userId: { notIn: [req.userFromToken?.userId || ""] },
   };
+  if (payload.followedByUserId) {
+    userListFilters = {
+      ...userListFilters,
+      followers: {
+        some: {
+          followerId: payload.followedByUserId,
+        },
+      },
+    };
+  } else if (payload.followerOfUserId) {
+    userListFilters = {
+      ...userListFilters,
+      following: {
+        some: {
+          followingId: payload.followerOfUserId,
+        },
+      },
+    };
+  }
 
-  // db query
+  // query database
   const users = await prismaClient.user.findMany({
     skip: (payload.page - 1) * payload.perPage,
     take: payload.perPage,
