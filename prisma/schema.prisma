@@ -19,18 +19,18 @@ model User {
 
   posts Post[]
 
-  followers Follows[] @relation("followers")
-  following Follows[] @relation("following")
+  followers Follows[] @relation("following")
+  following Follows[] @relation("followers")
 }
 
 model Follows {
   followId String @id @default(auto()) @map("_id") @db.ObjectId
 
   follower   User   @relation("followers", fields: [followerId], references: [userId])
-  followerId String @db.ObjectId
+  followerId String @db.ObjectId // if user's userId appears as followerId, he is following someone, hence the inversion
 
   following   User   @relation("following", fields: [followingId], references: [userId])
-  followingId String @db.ObjectId
+  followingId String @db.ObjectId // if user's userId appears as followingId, he is being followed/having a follower, hence the inversion
 
   @@unique([followingId, followerId])
 }
