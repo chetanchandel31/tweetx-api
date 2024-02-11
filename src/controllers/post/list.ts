@@ -16,6 +16,7 @@ const schemaPostListResponse = z.object({
     z.object({
       postId: z.string(),
       userId: z.string(),
+      userName: z.string(),
       content: z.string(),
       createdAtMs: z.number(),
       updatedAtMs: z.number(),
@@ -56,6 +57,23 @@ const postListHandler = defineHandler(async (payload) => {
   const posts = await prismaClient.post.findMany({
     skip: (payload.page - 1) * payload.perPage,
     take: payload.perPage,
+
+    where: postFilters,
+
+    orderBy: { createdAtMs: "desc" },
+
+    select: {
+      content: true,
+      createdAtMs: true,
+      postId: true,
+      updatedAtMs: true,
+      userId: true,
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
 
   // build items
@@ -67,11 +85,12 @@ const postListHandler = defineHandler(async (payload) => {
       userId: post.userId,
       createdAtMs: post.createdAtMs.getTime(),
       updatedAtMs: post.updatedAtMs.getTime(),
+      userName: post.user.name,
     });
   });
 
   // pagination meta
-  const totalItemsCount = await prismaClient.post.count({});
+  const totalItemsCount = await prismaClient.post.count({ where: postFilters });
   const totalPages = Math.ceil(totalItemsCount / payload.perPage);
   const nextPage = payload.page + 1 <= totalPages ? payload.page + 1 : null;
 
