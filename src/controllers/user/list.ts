@@ -37,10 +37,16 @@ const userListHandler = defineHandler(async (payload, req) => {
     errorMessages: ["Failed to list users"],
   };
 
+  const userListFilters = {
+    userId: { notIn: [req.userFromToken?.userId || ""] },
+  };
+
   // db query
   const users = await prismaClient.user.findMany({
     skip: (payload.page - 1) * payload.perPage,
     take: payload.perPage,
+
+    where: userListFilters,
 
     select: {
       userId: true,
@@ -72,7 +78,9 @@ const userListHandler = defineHandler(async (payload, req) => {
   });
 
   // pagination meta
-  const totalItemsCount = await prismaClient.user.count();
+  const totalItemsCount = await prismaClient.user.count({
+    where: userListFilters,
+  });
   const totalPages = Math.ceil(totalItemsCount / payload.perPage);
   const nextPage = payload.page + 1 <= totalPages ? payload.page + 1 : null;
 
