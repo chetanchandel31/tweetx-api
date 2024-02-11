@@ -12,6 +12,7 @@ const schemaUserGetProfileResponse = z.object({
   postsCount: z.number(),
   followingCount: z.number(),
   followersCount: z.number(),
+  followingUserIds: z.array(z.string()),
 });
 
 type TypeUserGetProfileResponse = z.infer<typeof schemaUserGetProfileResponse>;
@@ -40,7 +41,7 @@ const userGetProfileHandler = defineHandler(async (payload, req) => {
 
       followers: { select: { followId: true } },
 
-      following: { select: { followId: true } },
+      following: { select: { followingId: true } },
 
       posts: { select: { postId: true } },
     },
@@ -60,6 +61,7 @@ const userGetProfileHandler = defineHandler(async (payload, req) => {
       name: user.name,
       followersCount: user.followers.length,
       followingCount: user.following.length,
+      followingUserIds: user.following.map((follow) => follow.followingId),
       postsCount: user.posts.length,
     },
   };
