@@ -10,6 +10,7 @@ import userGetProfileHandler from "./controllers/user/get-profile";
 import userListHandler from "./controllers/user/list";
 import userUnFollowHandler from "./controllers/user/unfollow";
 import { validateAuthToken } from "./middlewares/validateAuthToken";
+import postGetHandler from "./controllers/post/get";
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.post("/user/follow", validateAuthToken, userFollowHandler);
 router.post("/user/unfollow", validateAuthToken, userUnFollowHandler);
 
 router.post("/post/create", validateAuthToken, postCreateHandler);
+router.post("/post/get", validateAuthToken, postGetHandler);
 router.post("/post/list", validateAuthToken, postListHandler);
 router.post("/post/update", validateAuthToken, postUpdateHandler);
 router.post("/post/delete", validateAuthToken, postDeleteHandler);

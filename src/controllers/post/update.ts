@@ -42,6 +42,9 @@ const postUpdateHandler = defineHandler(async (payload, req) => {
     },
   });
 
+  status = HttpStatusCode.OK;
+  responseData = { isSuccess: true, result: {} };
+
   return { responseData, status };
 });
 
