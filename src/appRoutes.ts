@@ -2,7 +2,9 @@ import express from "express";
 import authSignInHandler from "./controllers/auth/sign-in";
 import authSignUpHandler from "./controllers/auth/sign-up";
 import postCreateHandler from "./controllers/post/create";
+import postDeleteHandler from "./controllers/post/delete";
 import postListHandler from "./controllers/post/list";
+import postUpdateHandler from "./controllers/post/update";
 import userFollowHandler from "./controllers/user/follow";
 import userGetProfileHandler from "./controllers/user/get-profile";
 import userListHandler from "./controllers/user/list";
@@ -21,5 +23,7 @@ router.post("/user/unfollow", validateAuthToken, userUnFollowHandler);
 
 router.post("/post/create", validateAuthToken, postCreateHandler);
 router.post("/post/list", validateAuthToken, postListHandler);
+router.post("/post/update", validateAuthToken, postUpdateHandler);
+router.post("/post/delete", validateAuthToken, postDeleteHandler);
 
 export default router;

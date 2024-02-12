@@ -5,7 +5,8 @@ import HttpStatusCode from "../../utils/httpStatus";
 import { TypeResult } from "../../types";
 import { config } from "../../config";
 
-const schemaPostCreatePayload = z.object({
+const schemaPostUpdatePayload = z.object({
+  postId: z.string({ required_error: "Post id is required" }),
   content: z
     .string({ required_error: "Content is required" })
     .min(1, { message: "Content shouldn't be empty" })
@@ -13,38 +14,35 @@ const schemaPostCreatePayload = z.object({
       message: `Content shouldn't be of more than ${config.postContentMaxLength} characters`,
     }),
 });
-const schemaPostCreateResponse = z.object({});
+const schemaPostUpdateResponse = z.object({});
 
-type TypePostCreateResponse = z.infer<typeof schemaPostCreateResponse>;
+type TypePostUpdateResponse = z.infer<typeof schemaPostUpdateResponse>;
 
 const prismaClient = getPrismaClient();
 
 const defineHandler = createRequestHandler(
-  schemaPostCreatePayload,
-  schemaPostCreateResponse
+  schemaPostUpdatePayload,
+  schemaPostUpdateResponse
 );
 
-const postCreateHandler = defineHandler(async (payload, req) => {
+const postUpdateHandler = defineHandler(async (payload, req) => {
   let status: number = HttpStatusCode.BAD_REQUEST;
-  let responseData: TypeResult<TypePostCreateResponse> = {
+  let responseData: TypeResult<TypePostUpdateResponse> = {
     isSuccess: false,
-    errorMessages: ["Failed to create post"],
+    errorMessages: ["Failed to update post"],
   };
 
-  await prismaClient.post.create({
-    data: {
-      content: payload.content,
+  await prismaClient.post.update({
+    where: {
+      postId: payload.postId,
       userId: req.userFromToken?.userId || "",
     },
+    data: {
+      content: payload.content,
+    },
   });
-
-  status = HttpStatusCode.OK;
-  responseData = {
-    isSuccess: true,
-    result: {},
-  };
 
   return { responseData, status };
 });
 
-export default postCreateHandler;
+export default postUpdateHandler;
