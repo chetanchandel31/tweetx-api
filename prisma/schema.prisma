@@ -19,8 +19,8 @@ model User {
 
   posts Post[]
 
-  followers Follows[] @relation("following")
-  following Follows[] @relation("followers")
+  followers Follows[] @relation("followed")
+  followed  Follows[] @relation("followers")
 }
 
 model Follows {
@@ -29,10 +29,10 @@ model Follows {
   follower   User   @relation("followers", fields: [followerId], references: [userId])
   followerId String @db.ObjectId // if user's userId appears as followerId, he is following someone, hence the inversion
 
-  following   User   @relation("following", fields: [followingId], references: [userId])
-  followingId String @db.ObjectId // if user's userId appears as followingId, he is being followed/having a follower, hence the inversion
+  followed   User   @relation("followed", fields: [followedId], references: [userId])
+  followedId String @db.ObjectId // if user's userId appears as followedId, he is being followed/having a follower, hence the inversion
 
-  @@unique([followingId, followerId])
+  @@unique([followedId, followerId])
 }
 
 model Post {

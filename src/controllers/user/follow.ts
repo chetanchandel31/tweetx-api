@@ -35,7 +35,7 @@ const userFollowHandler = defineHandler(async (payload, req) => {
     await prismaClient.follows.create({
       data: {
         followerId: req.userFromToken?.userId || "",
-        followingId: payload.userToFollowId,
+        followedId: payload.userToFollowId,
       },
     });
 
@@ -59,7 +59,7 @@ const userFollowHandler = defineHandler(async (payload, req) => {
       status = HttpStatusCode.CONFLICT;
       responseData = {
         isSuccess: false,
-        errorMessages: ["You are already following the user"],
+        errorMessages: ["You are already followed the user"],
         details: error,
       };
     }

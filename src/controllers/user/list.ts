@@ -69,9 +69,9 @@ const userListHandler = defineHandler(async (payload, req) => {
   } else if (payload.followerOfUserId) {
     userListFilters = {
       ...userListFilters,
-      following: {
+      followed: {
         some: {
-          followingId: payload.followerOfUserId,
+          followedId: payload.followerOfUserId,
         },
       },
     };

@@ -33,9 +33,9 @@ const userUnFollowHandler = defineHandler(async (payload, req) => {
 
   await prismaClient.follows.delete({
     where: {
-      followingId_followerId: {
+      followedId_followerId: {
         followerId: req.userFromToken?.userId || "",
-        followingId: payload.userToUnFollowId,
+        followedId: payload.userToUnFollowId,
       },
     },
   });
