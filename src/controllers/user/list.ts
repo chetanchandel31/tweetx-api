@@ -28,6 +28,8 @@ const schemaUserListResponse = z.object({
       userId: z.string(),
       isFollowed: z.boolean(),
       followersCount: z.number(),
+      followedCount: z.number(),
+      postsCount: z.number(),
       name: z.string(),
     })
   ),
@@ -92,6 +94,16 @@ const userListHandler = defineHandler(async (payload, req) => {
           followerId: true,
         },
       },
+      followed: {
+        select: {
+          followedId: true,
+        },
+      },
+      posts: {
+        select: {
+          postId: true,
+        },
+      },
     },
   });
 
@@ -109,6 +121,8 @@ const userListHandler = defineHandler(async (payload, req) => {
       name: user.name,
       userId: user.userId,
       followersCount: user.followers.length,
+      followedCount: user.followed.length,
+      postsCount: user.posts.length,
       isFollowed,
     });
   });
