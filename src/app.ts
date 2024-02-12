@@ -27,9 +27,7 @@ app.use(cors());
 app.use(addFakeDelayBeforeResponse(app.settings.env));
 
 // routes
-app.get("/api", (_req, res) =>
-  res.send({ name: "activity-tracker-2", ok: true })
-);
+app.get("/api", (_req, res) => res.send({ name: "tweetx", ok: true }));
 app.use("/api", appRoutes);
 
 // handle errors and 404s
