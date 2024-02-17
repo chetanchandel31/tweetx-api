@@ -3,11 +3,12 @@ import getPrismaClient from "../../utils/getPrismaClient";
 import { createRequestHandler } from "../../utils/createRequestHandler";
 import HttpStatusCode from "../../utils/httpStatus";
 import { TypeResult } from "../../types";
+import { schemaPerPage } from "../../config";
 
 const schemaUserListPayload = z
   .object({
     page: z.number(),
-    perPage: z.number(),
+    perPage: schemaPerPage,
     followedByUserId: z.string().optional(),
     followerOfUserId: z.string().optional(),
   })

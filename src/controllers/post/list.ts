@@ -3,10 +3,11 @@ import getPrismaClient from "../../utils/getPrismaClient";
 import { createRequestHandler } from "../../utils/createRequestHandler";
 import HttpStatusCode from "../../utils/httpStatus";
 import { TypeResult } from "../../types";
+import { schemaPerPage } from "../../config";
 
 const schemaPostListPayload = z.object({
   page: z.number(),
-  perPage: z.number(),
+  perPage: schemaPerPage,
   postedByUserIds: z.array(z.string()),
 });
 const schemaPostListResponse = z.object({
